@@ -17,15 +17,31 @@ from openpyxl.styles import Font, PatternFill, Alignment, Border, Side
 st.set_page_config(page_title="GVPCEW Surveillance", page_icon="🛡️",
                    layout="wide", initial_sidebar_state="expanded")
 
-ROLL_NUMBERS = {
-    'sushmitha' :'322103282070','praneetha':'322103282101',
-    'anusha'    :'322103282075','devika'   :'322103282116',
-    'navya'     :'322103282118','jessy'    :'322103282065',
-    'ashwitha'  :'322103282093','anuradha' :'322103282100',
-    'jayasri'   :'322103282096','gayatri'  :'322103282024',
-    'vaghdevi'  :'322103282073','srujana'  :'322103282069',
-    'jyothsna'  :'322103282114',
-}
+def load_students_from_dataset(file):
+    roll_dict = {}
+
+    if not os.path.exists(file):
+        print("Excel NOT FOUND:", file)
+        return roll_dict
+
+    wb = openpyxl.load_workbook(file)
+    ws = wb.active
+
+    for row in ws.iter_rows(min_row=2, values_only=True):
+        if not row:
+            continue
+
+        name = str(row[0]).strip().lower() if row[0] else None
+        roll = str(row[2]).strip() if row[2] else None
+
+        if name and roll:
+            roll_dict[name] = roll
+    return roll_dict
+
+ROLL_NUMBERS = load_students_from_dataset(
+    "CCTV project dataset.xlsx"
+)
+
 EXCEL_MASTER  = 'attendance_master.xlsx'   # all sessions, never deleted
 # session file path is set at START time (see session state below)
 
